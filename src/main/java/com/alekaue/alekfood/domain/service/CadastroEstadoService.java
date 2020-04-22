@@ -7,29 +7,29 @@ import org.springframework.stereotype.Service;
 
 import com.alekaue.alekfood.domain.exception.EntidadeEmUsoException;
 import com.alekaue.alekfood.domain.exception.EntidadeNaoEncontradaException;
-import com.alekaue.alekfood.domain.model.Cozinha;
-import com.alekaue.alekfood.domain.repository.CozinhaRepository;
+import com.alekaue.alekfood.domain.model.Estado;
+import com.alekaue.alekfood.domain.repository.EstadoRepository;
 
 @Service
-public class CadastroCozinhaService {
+public class CadastroEstadoService {
 
 	@Autowired
-	CozinhaRepository cozinhaRepository;
+	EstadoRepository estadoRepository;
 	
-	public Cozinha salvar(Cozinha cozinha) {
-		return cozinhaRepository.salvar(cozinha);
+	public Estado salvar(Estado estado) {
+		return estadoRepository.adicionar(estado);
 	}
 	
-	public void excluir(Long cozinhaId) {
+	public void excluir(Long estadoId) {
 		try {
-			cozinhaRepository.remover(cozinhaId);
+			estadoRepository.remover(estadoId);
 			
 		} catch (EmptyResultDataAccessException e) {
 			throw new EntidadeNaoEncontradaException(
-					String.format("Não existe um cadastro de cozinha com código %d", cozinhaId));
+					String.format("Não existe um cadastro de estado com código %d", estadoId));
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
-				String.format("Cozinha de código %d não pode ser removida, pois está em uso", cozinhaId));
+				String.format("Estado de código %d não pode ser removida, pois está em uso", estadoId));
 		}
 	}
 }
