@@ -1,13 +1,12 @@
 package com.alekaue.alekfood.domain.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.alekaue.alekfood.domain.model.FormaPagamento;
 
-public interface FormaPagamentoRepository {
+@Repository
+public interface FormaPagamentoRepository extends JpaRepository<FormaPagamento, Long>{
 
-	List<FormaPagamento> todas();
-	FormaPagamento porId(Long id);
-	FormaPagamento adicionar(FormaPagamento formaDePagamento);
-	void remover(FormaPagamento formaDePagamento);
+
 }
