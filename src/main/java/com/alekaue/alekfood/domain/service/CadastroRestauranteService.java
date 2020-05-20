@@ -6,26 +6,28 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.alekaue.alekfood.domain.exception.EntidadeEmUsoException;
-import com.alekaue.alekfood.domain.exception.EntidadeNaoEncontradaException;
+import com.alekaue.alekfood.domain.exception.RestauranteNaoEncontradoException;
 import com.alekaue.alekfood.domain.model.Cozinha;
 import com.alekaue.alekfood.domain.model.Restaurante;
-import com.alekaue.alekfood.domain.repository.CozinhaRepository;
 import com.alekaue.alekfood.domain.repository.RestauranteRepository;
 
 @Service
 public class CadastroRestauranteService {
 
+	private static final String MSG_RESTAURANTE_ESTA_EM_USO = "Restaurante de código %d não pode ser removida, pois está em uso";
+
 	@Autowired
 	private RestauranteRepository restauranteRepository;
 	
 	@Autowired
-	private CozinhaRepository cozinhaRepository;
+	private CadastroCozinhaService cadastroCozinha;
+
 	
 	public Restaurante salvar(Restaurante restaurante) {
+		
 		Long cozinhaId = restaurante.getCozinha().getId();
-		Cozinha cozinha = cozinhaRepository.findById(cozinhaId)
-				.orElseThrow(() -> new EntidadeNaoEncontradaException(
-						String.format("Não existe cadastro de cozinha com o código %d", cozinhaId)));
+		
+		Cozinha cozinha = cadastroCozinha.buscarOuFalhar(cozinhaId);
 		
 		restaurante.setCozinha(cozinha);
 		
@@ -37,11 +39,15 @@ public class CadastroRestauranteService {
 			restauranteRepository.deleteById(restauranteId);
 			
 		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(
-					String.format("Não existe um cadastro de restaurante com código %d", restauranteId));
+			throw new RestauranteNaoEncontradoException(restauranteId);
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
-				String.format("Restaurante de código %d não pode ser removida, pois está em uso", restauranteId));
+				String.format(MSG_RESTAURANTE_ESTA_EM_USO, restauranteId));
 		}
+	}
+	
+	public Restaurante buscarOuFalhar(Long restauranteId) {
+		return restauranteRepository.findById(restauranteId)
+				.orElseThrow(() -> new RestauranteNaoEncontradoException(restauranteId));
 	}
 }
