@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alekaue.alekfood.api.assember.EstadoInputDisassembler;
+import com.alekaue.alekfood.api.assember.EstadoModelAssembler;
+import com.alekaue.alekfood.api.model.EstadoModel;
+import com.alekaue.alekfood.api.model.input.EstadoInput;
 import com.alekaue.alekfood.domain.model.Estado;
 import com.alekaue.alekfood.domain.repository.EstadoRepository;
 import com.alekaue.alekfood.domain.service.CadastroEstadoService;
@@ -32,50 +35,50 @@ public class EstadoController {
 	@Autowired
 	private CadastroEstadoService cadastroEstado;
 	
+	@Autowired
+	private EstadoModelAssembler estadoModelAssembler;
+	
+	@Autowired
+	private EstadoInputDisassembler estadoInputDisassembler;
+	
 	@GetMapping
-	public List<Estado> listar() {
-		return estadoRepository.findAll();
+	public List<EstadoModel> listar() {
+		List<Estado> todosEstados = estadoRepository.findAll();
+		
+		return estadoModelAssembler.toCollectionModel(todosEstados);
 	}
 	
 	@GetMapping("/{estadoId}")
-	public Estado buscar(@PathVariable Long estadoId) {
-		return cadastroEstado.buscarOuFalhar(estadoId);
+	public EstadoModel buscar(@PathVariable Long estadoId) {
+		Estado estado = cadastroEstado.buscarOuFalhar(estadoId);
 		
-//		Optional<Estado> estado = estadoRepository.findById(estadoId);
-//		
-//		if (estado.isPresent()) {
-//			return ResponseEntity.ok(estado.get());
-//		}
-//		return ResponseEntity.notFound().build();
+		return estadoModelAssembler.toModel(estado);
 	}
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Estado adicionar(@RequestBody @Valid Estado estado) {
-		return cadastroEstado.salvar(estado);
+	public EstadoModel adicionar(@RequestBody @Valid EstadoInput estadoInput) {
+		Estado estado = estadoInputDisassembler.toDomainObject(estadoInput);
+		
+		estado = cadastroEstado.salvar(estado);
+		
+		return estadoModelAssembler.toModel(estado);
 	}
 	
 	@PutMapping("/{estadoId}")
-	public Estado atualizar(@PathVariable Long estadoId, 
-			@RequestBody @Valid Estado estado) {
+	public EstadoModel atualizar(@PathVariable Long estadoId, 
+			@RequestBody @Valid EstadoInput estadoInput) {
+		
 		Estado estadoAtual = cadastroEstado.buscarOuFalhar(estadoId);
 		
-		BeanUtils.copyProperties(estado, estadoAtual, "id");
+		estadoInputDisassembler.copyToDomainObject(estadoInput, estadoAtual);
 		
-		return cadastroEstado.salvar(estadoAtual);
+		//BeanUtils.copyProperties(estado, estadoAtual, "id");
+
+		estadoAtual = cadastroEstado.salvar(estadoAtual);
 		
-//		Optional<Estado> estadoAtual = estadoRepository.findById(estadoId);
-//		
-//		if (estadoAtual.isPresent()) {
-//			BeanUtils.copyProperties(estado, estadoAtual.get(), "id");
-//			
-//			Estado estadoSalvo = cadastroEstado.salvar(estadoAtual.get());
-//			
-//			return ResponseEntity.ok(estadoSalvo);
-//			
-//		}
-//		
-//		return ResponseEntity.notFound().build();
+		
+		return estadoModelAssembler.toModel(estadoAtual);
 	}
 	
 	@DeleteMapping("/{estadoId}")
@@ -83,9 +86,5 @@ public class EstadoController {
 	public void remover(@PathVariable Long estadoId) {
 			cadastroEstado.excluir(estadoId);
 	}
-	
-	
-	
-	
 
 }

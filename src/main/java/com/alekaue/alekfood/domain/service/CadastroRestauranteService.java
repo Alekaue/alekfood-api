@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alekaue.alekfood.domain.exception.EntidadeEmUsoException;
 import com.alekaue.alekfood.domain.exception.RestauranteNaoEncontradoException;
@@ -22,7 +23,7 @@ public class CadastroRestauranteService {
 	@Autowired
 	private CadastroCozinhaService cadastroCozinha;
 
-	
+	@Transactional
 	public Restaurante salvar(Restaurante restaurante) {
 		
 		Long cozinhaId = restaurante.getCozinha().getId();
@@ -34,17 +35,15 @@ public class CadastroRestauranteService {
 		return restauranteRepository.save(restaurante);
 	}
 	
-	public void excluir(Long restauranteId) {
-		try {
-			restauranteRepository.deleteById(restauranteId);
-			
-		} catch (EmptyResultDataAccessException e) {
-			throw new RestauranteNaoEncontradoException(restauranteId);
-		} catch (DataIntegrityViolationException e) {
-			throw new EntidadeEmUsoException(
-				String.format(MSG_RESTAURANTE_ESTA_EM_USO, restauranteId));
-		}
-	}
+	
+	  @Transactional public void excluir(Long restauranteId) { try {
+	  restauranteRepository.deleteById(restauranteId);
+	  
+	  } catch (EmptyResultDataAccessException e) { throw new
+	  RestauranteNaoEncontradoException(restauranteId); } catch
+	  (DataIntegrityViolationException e) { throw new EntidadeEmUsoException(
+	  String.format(MSG_RESTAURANTE_ESTA_EM_USO, restauranteId)); } }
+	 
 	
 	public Restaurante buscarOuFalhar(Long restauranteId) {
 		return restauranteRepository.findById(restauranteId)

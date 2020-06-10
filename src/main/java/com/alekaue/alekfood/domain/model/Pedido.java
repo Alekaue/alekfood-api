@@ -2,7 +2,7 @@ package com.alekaue.alekfood.domain.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +36,9 @@ public class Pedido {
 
 	private StatusPedido statusPedido;
 
-	private LocalDateTime dataConfirmacao;
-	private LocalDateTime dataCancelamento;
-	private LocalDateTime dataEntrega;
+	private OffsetDateTime dataConfirmacao;
+	private OffsetDateTime dataCancelamento;
+	private OffsetDateTime dataEntrega;
 
 	@Column(name = "sub_total", nullable = false)
 	private BigDecimal subTotal;
