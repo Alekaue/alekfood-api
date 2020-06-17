@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alekaue.alekfood.domain.exception.EntidadeEmUsoException;
 import com.alekaue.alekfood.domain.exception.RestauranteNaoEncontradoException;
+import com.alekaue.alekfood.domain.model.Cidade;
 import com.alekaue.alekfood.domain.model.Cozinha;
 import com.alekaue.alekfood.domain.model.Restaurante;
 import com.alekaue.alekfood.domain.repository.RestauranteRepository;
@@ -19,32 +20,54 @@ public class CadastroRestauranteService {
 
 	@Autowired
 	private RestauranteRepository restauranteRepository;
-	
+
 	@Autowired
 	private CadastroCozinhaService cadastroCozinha;
+	
+	@Autowired
+	private CadastroCidadeService cadastroCidade;
 
 	@Transactional
 	public Restaurante salvar(Restaurante restaurante) {
-		
+
 		Long cozinhaId = restaurante.getCozinha().getId();
-		
+		Long cidadeId = restaurante.getEndereco().getCidade().getId();
+
 		Cozinha cozinha = cadastroCozinha.buscarOuFalhar(cozinhaId);
-		
+		Cidade cidade = cadastroCidade.buscarOuFalhar(cidadeId); 
+
 		restaurante.setCozinha(cozinha);
-		
+		restaurante.getEndereco().setCidade(cidade);
+
 		return restauranteRepository.save(restaurante);
 	}
 	
+	@Transactional
+	public void ativar(Long restauranteId) {
+		Restaurante restauranteAtual = buscarOuFalhar(restauranteId);
+		
+		restauranteAtual.ativar();
+	}
 	
-	  @Transactional public void excluir(Long restauranteId) { try {
-	  restauranteRepository.deleteById(restauranteId);
-	  
-	  } catch (EmptyResultDataAccessException e) { throw new
-	  RestauranteNaoEncontradoException(restauranteId); } catch
-	  (DataIntegrityViolationException e) { throw new EntidadeEmUsoException(
-	  String.format(MSG_RESTAURANTE_ESTA_EM_USO, restauranteId)); } }
-	 
-	
+	@Transactional
+	public void inativar(Long restauranteId) {
+		Restaurante restauranteAtual = buscarOuFalhar(restauranteId);
+		
+		restauranteAtual.inativar();
+	}
+
+	@Transactional
+	public void excluir(Long restauranteId) {
+		try {
+			restauranteRepository.deleteById(restauranteId);
+
+		} catch (EmptyResultDataAccessException e) {
+			throw new RestauranteNaoEncontradoException(restauranteId);
+		} catch (DataIntegrityViolationException e) {
+			throw new EntidadeEmUsoException(String.format(MSG_RESTAURANTE_ESTA_EM_USO, restauranteId));
+		}
+	}
+
 	public Restaurante buscarOuFalhar(Long restauranteId) {
 		return restauranteRepository.findById(restauranteId)
 				.orElseThrow(() -> new RestauranteNaoEncontradoException(restauranteId));

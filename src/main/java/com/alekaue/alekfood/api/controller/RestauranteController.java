@@ -20,7 +20,8 @@ import com.alekaue.alekfood.api.assember.RestauranteInputDisassembler;
 import com.alekaue.alekfood.api.assember.RestauranteModelAssembler;
 import com.alekaue.alekfood.api.model.RestauranteModel;
 import com.alekaue.alekfood.api.model.input.RestauranteInput;
-import com.alekaue.alekfood.domain.exception.EntidadeNaoEncontradaException;
+import com.alekaue.alekfood.domain.exception.CidadeNaoEncontradaException;
+import com.alekaue.alekfood.domain.exception.CozinhaNaoEncontradaException;
 import com.alekaue.alekfood.domain.exception.NegocioException;
 import com.alekaue.alekfood.domain.model.Restaurante;
 import com.alekaue.alekfood.domain.repository.RestauranteRepository;
@@ -63,7 +64,7 @@ public class RestauranteController {
 		
 		try {
 			return restauranteModelAssembler.toModel(cadastroRestaurante.salvar(restaurante));
-		} catch (EntidadeNaoEncontradaException e) {
+		} catch (CozinhaNaoEncontradaException | CidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
 
@@ -75,15 +76,15 @@ public class RestauranteController {
 		
 		//Restaurante restaurante = restauranteInputDesassembler.toDomainObject(restauranteInput);
 		
+		try {
 		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
 		
 		restauranteInputDesassembler.copyToDomainObject(restauranteInput, restauranteAtual);
 	
 		//BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento", "endereco", 
 		//			"dataCadastro", "produtos");
-		try {
 			return restauranteModelAssembler.toModel(cadastroRestaurante.salvar(restauranteAtual));
-		} catch (EntidadeNaoEncontradaException e) {
+		} catch (CozinhaNaoEncontradaException | CidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
 	}
@@ -92,6 +93,18 @@ public class RestauranteController {
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public void remover(@PathVariable Long restauranteId) {
 			cadastroRestaurante.excluir(restauranteId);
+	}
+	
+	@PutMapping("/{restauranteId}/ativo")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void ativar(@PathVariable Long restauranteId) {
+		cadastroRestaurante.ativar(restauranteId);
+	}
+	
+	@DeleteMapping("/{restauranteId}/ativo")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void inativar(@PathVariable Long restauranteId) {
+		cadastroRestaurante.inativar(restauranteId);
 	}
 	
 }

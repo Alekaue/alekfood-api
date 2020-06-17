@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alekaue.alekfood.api.model.input.RestauranteInput;
+import com.alekaue.alekfood.domain.model.Cidade;
 import com.alekaue.alekfood.domain.model.Cozinha;
 import com.alekaue.alekfood.domain.model.Restaurante;
 
@@ -23,6 +24,9 @@ public class RestauranteInputDisassembler {
 		//Para evitar org.hibernate.HibernateException: identifier of an instance of 
 		//com.alekaue.alekfood.domain.model.Cozinha was altered from 1 to 2
 		restaurante.setCozinha(new Cozinha());
+		if (restaurante.getEndereco() != null) {
+			restaurante.getEndereco().setCidade(new Cidade());
+		}
 		modelMapper.map(restauranteInput, restaurante);
 	}
 }
