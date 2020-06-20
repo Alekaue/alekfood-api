@@ -1,0 +1,27 @@
+package com.alekaue.alekfood.domain.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.alekaue.alekfood.domain.exception.ProdutoNaoEncontradoException;
+import com.alekaue.alekfood.domain.model.Produto;
+import com.alekaue.alekfood.domain.repository.ProdutoRepository;
+
+@Service
+public class CadastroProdutoService {
+
+	@Autowired
+	private ProdutoRepository produtoRepository;
+	
+	@Transactional
+	public Produto salvar(Produto produto) {
+		return produtoRepository.save(produto);
+	}
+	
+	public Produto buscarOuFalahr(Long restauranteId, Long produtoId) {
+		return produtoRepository.findById(restauranteId, produtoId)
+				.orElseThrow(() -> new ProdutoNaoEncontradoException(restauranteId, produtoId));
+	}
+	
+}

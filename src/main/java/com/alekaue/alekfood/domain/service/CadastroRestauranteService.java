@@ -1,22 +1,19 @@
 package com.alekaue.alekfood.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alekaue.alekfood.domain.exception.EntidadeEmUsoException;
 import com.alekaue.alekfood.domain.exception.RestauranteNaoEncontradoException;
 import com.alekaue.alekfood.domain.model.Cidade;
 import com.alekaue.alekfood.domain.model.Cozinha;
+import com.alekaue.alekfood.domain.model.FormaPagamento;
 import com.alekaue.alekfood.domain.model.Restaurante;
 import com.alekaue.alekfood.domain.repository.RestauranteRepository;
 
 @Service
 public class CadastroRestauranteService {
 
-	private static final String MSG_RESTAURANTE_ESTA_EM_USO = "Restaurante de código %d não pode ser removida, pois está em uso";
 
 	@Autowired
 	private RestauranteRepository restauranteRepository;
@@ -26,6 +23,9 @@ public class CadastroRestauranteService {
 	
 	@Autowired
 	private CadastroCidadeService cadastroCidade;
+	
+	@Autowired
+	private CadastroFormaPagamentoService cadastroFormaPagamento;
 
 	@Transactional
 	public Restaurante salvar(Restaurante restaurante) {
@@ -55,17 +55,34 @@ public class CadastroRestauranteService {
 		
 		restauranteAtual.inativar();
 	}
-
+	
 	@Transactional
-	public void excluir(Long restauranteId) {
-		try {
-			restauranteRepository.deleteById(restauranteId);
-
-		} catch (EmptyResultDataAccessException e) {
-			throw new RestauranteNaoEncontradoException(restauranteId);
-		} catch (DataIntegrityViolationException e) {
-			throw new EntidadeEmUsoException(String.format(MSG_RESTAURANTE_ESTA_EM_USO, restauranteId));
-		}
+	public void abrir(Long restauranteId) {
+		Restaurante restauranteAtual = buscarOuFalhar(restauranteId);
+		restauranteAtual.abrir();
+	}
+	
+	@Transactional
+	public void fechar(Long restauranteId) {
+		Restaurante restauranteAtual = buscarOuFalhar(restauranteId);
+		restauranteAtual.fechar();
+	}
+	
+	
+	@Transactional
+	public void dessassociarFormaPagamento(Long restauranteId, Long formaPagamentoId) {
+		Restaurante restaurante = buscarOuFalhar(restauranteId);
+		FormaPagamento formaPagamento = cadastroFormaPagamento.buscarOuFalhar(formaPagamentoId);
+		
+		restaurante.removerFormaPagamento(formaPagamento);
+	}
+	
+	@Transactional
+	public void associarFormaPagamento(Long restauranteId, Long formaPagamentoId) {
+		Restaurante restaurante = buscarOuFalhar(restauranteId);
+		FormaPagamento formaPagamento = cadastroFormaPagamento.buscarOuFalhar(formaPagamentoId);
+		
+		restaurante.adicionarFormaPagamento(formaPagamento);
 	}
 
 	public Restaurante buscarOuFalhar(Long restauranteId) {
