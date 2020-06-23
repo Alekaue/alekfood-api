@@ -23,6 +23,7 @@ import com.alekaue.alekfood.api.model.input.RestauranteInput;
 import com.alekaue.alekfood.domain.exception.CidadeNaoEncontradaException;
 import com.alekaue.alekfood.domain.exception.CozinhaNaoEncontradaException;
 import com.alekaue.alekfood.domain.exception.NegocioException;
+import com.alekaue.alekfood.domain.exception.RestauranteNaoEncontradoException;
 import com.alekaue.alekfood.domain.model.Restaurante;
 import com.alekaue.alekfood.domain.repository.RestauranteRepository;
 import com.alekaue.alekfood.domain.service.CadastroRestauranteService;
@@ -101,6 +102,27 @@ public class RestauranteController {
 		cadastroRestaurante.inativar(restauranteId);
 	}
 	
+	@PutMapping("/ativacoes")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void ativarMultiplos(@RequestBody List<Long> restauranteIds) {
+		try {
+			cadastroRestaurante.ativar(restauranteIds);
+			
+		} catch (RestauranteNaoEncontradoException e) {
+			throw new NegocioException(e.getMessage(), e);
+		}
+	}
+	
+	@DeleteMapping("/ativacoes")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void desativarMultiplos(@RequestBody List<Long> restauranteIds) {
+		try {
+			cadastroRestaurante.inativar(restauranteIds);
+			
+		} catch (RestauranteNaoEncontradoException e) {
+			throw new NegocioException(e.getMessage(), e);
+		}
+	}
 	
 	@PutMapping("/{restauranteId}/abertura")
 	@ResponseStatus(HttpStatus.NO_CONTENT)

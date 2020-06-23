@@ -12,7 +12,7 @@ create table pedido (
 	endereco_cep varchar(9) not null,
 	endereco_logradouro varchar(100) not null,
 	endereco_numero varchar(20) not null,
-	endereco_compelemento varchar(60) null,
+	endereco_complemento varchar(60) null,
 	endereco_bairro varchar(60) not null,
 	
 	status varchar(10) not null,

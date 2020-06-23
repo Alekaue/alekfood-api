@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alekaue.alekfood.domain.exception.NegocioException;
 import com.alekaue.alekfood.domain.exception.UsuarioNaoEncontradoException;
+import com.alekaue.alekfood.domain.model.Grupo;
 import com.alekaue.alekfood.domain.model.Usuario;
 import com.alekaue.alekfood.domain.repository.UsuarioRepository;
 
@@ -16,6 +17,9 @@ public class CadastroUsuarioService {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private CadastroGrupoService cadastroGrupo;
 
 	@Transactional
 	public Usuario salvar(Usuario usuario) {
@@ -39,6 +43,22 @@ public class CadastroUsuarioService {
 			throw new NegocioException("Senha atual informada não coincide com a senha do usuário.");
 		}
 		usuario.setSenha(novaSenha);
+	}
+	
+	@Transactional
+	public void desassociar(Long usuarioId, Long grupoId) {
+		Usuario usuario = buscarOuFalhar(usuarioId);
+		Grupo grupo = cadastroGrupo.buscarOuFalhar(grupoId);
+		
+		usuario.removerGrupo(grupo);
+	}
+	
+	@Transactional
+	public void associar(Long usuarioId, Long grupoId) {
+		Usuario usuario = buscarOuFalhar(usuarioId);
+		Grupo grupo = cadastroGrupo.buscarOuFalhar(grupoId);
+		
+		usuario.adicionarGrupo(grupo);
 	}
 
 	public Usuario buscarOuFalhar(Long usuarioId) {

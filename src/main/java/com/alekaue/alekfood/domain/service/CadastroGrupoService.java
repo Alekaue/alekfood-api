@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alekaue.alekfood.domain.exception.EntidadeEmUsoException;
 import com.alekaue.alekfood.domain.exception.GrupoNaoEncontradoException;
 import com.alekaue.alekfood.domain.model.Grupo;
+import com.alekaue.alekfood.domain.model.Permissao;
 import com.alekaue.alekfood.domain.repository.GrupoRepository;
 
 @Service
@@ -19,11 +20,15 @@ public class CadastroGrupoService {
 	@Autowired
 	private GrupoRepository grupoRepository;
 	
+	@Autowired
+	private CadastroPermissaoService cadastroPermissao;
+	
 	@Transactional
 	public Grupo salvar(Grupo grupo) {
 		return grupoRepository.save(grupo);
 	}
 	
+	@Transactional
 	public void excluir(Long grupoId) {
 		try {
 			grupoRepository.deleteById(grupoId);
@@ -34,6 +39,23 @@ public class CadastroGrupoService {
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format(MSG_GRUPO_EM_USO, grupoId));
 		}
+	}
+	
+	@Transactional
+	public void desassociarPermissao(Long grupoId, Long permissaoId) {
+		Grupo grupo = buscarOuFalhar(grupoId);
+		Permissao permissao = cadastroPermissao.buscarOuFalhar(permissaoId);
+		
+		grupo.removerPermissao(permissao);
+		
+	}
+	
+	@Transactional
+	public void associarPermissao(Long grupoId, Long permissaoId) {
+		Grupo grupo = buscarOuFalhar(grupoId);
+		Permissao permissao = cadastroPermissao.buscarOuFalhar(permissaoId);
+		
+		grupo.adicionarPermissao(permissao);
 	}
 	
 	public Grupo buscarOuFalhar(Long grupoId) {
