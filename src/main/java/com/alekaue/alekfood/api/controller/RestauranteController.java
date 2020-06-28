@@ -20,6 +20,7 @@ import com.alekaue.alekfood.api.assember.RestauranteInputDisassembler;
 import com.alekaue.alekfood.api.assember.RestauranteModelAssembler;
 import com.alekaue.alekfood.api.model.RestauranteModel;
 import com.alekaue.alekfood.api.model.input.RestauranteInput;
+import com.alekaue.alekfood.api.model.view.RestauranteView;
 import com.alekaue.alekfood.domain.exception.CidadeNaoEncontradaException;
 import com.alekaue.alekfood.domain.exception.CozinhaNaoEncontradaException;
 import com.alekaue.alekfood.domain.exception.NegocioException;
@@ -27,6 +28,7 @@ import com.alekaue.alekfood.domain.exception.RestauranteNaoEncontradoException;
 import com.alekaue.alekfood.domain.model.Restaurante;
 import com.alekaue.alekfood.domain.repository.RestauranteRepository;
 import com.alekaue.alekfood.domain.service.CadastroRestauranteService;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/restaurantes")
@@ -44,11 +46,57 @@ public class RestauranteController {
 	@Autowired
 	RestauranteInputDisassembler restauranteInputDesassembler;
 	
+	
+
+	@JsonView(RestauranteView.Resumo.class)
 	@GetMapping
 	public List<RestauranteModel> listar() {
 		return restauranteModelAssembler.toCollectionModel(restauranteRepository.findAll());
 	}
 	
+	@JsonView(RestauranteView.ApenasNome.class)
+	@GetMapping(params = "projecao=apenas-nome")
+	public List<RestauranteModel> listarApenasNomes() {
+		return listar();
+	}
+
+	
+	
+//	@GetMapping
+//	public MappingJacksonValue listar(@RequestParam(required = false) String projecao) {
+//		List<Restaurante> restaurantes = restauranteRepository.findAll();
+//		List<RestauranteModel> restaurantesModel = restauranteModelAssembler.toCollectionModel(restaurantes);
+//		
+//		MappingJacksonValue restaurantesWrapper = new MappingJacksonValue(restaurantesModel);
+//		
+//		restaurantesWrapper.setSerializationView(RestauranteView.Resumo.class);
+//		
+//		if ("apenas-nome".equals(projecao)) {
+//			restaurantesWrapper.setSerializationView(RestauranteView.ApenasNome.class);
+//		} else if ("completo".equals(projecao)) {
+//			restaurantesWrapper.setSerializationView(null);
+//		}
+//		
+//		return restaurantesWrapper;
+//	}
+	
+//	@GetMapping
+//	public List<RestauranteModel> listar() {
+//		return restauranteModelAssembler.toCollectionModel(restauranteRepository.findAll());
+//	}
+//	
+//	@JsonView(RestauranteView.ApenasNome.class)
+//	@GetMapping(params = "prejecao=apenas-nome")
+//	public List<RestauranteModel> listarApenasNomes() {
+//		return listar();
+//	}
+//
+//	@JsonView(RestauranteView.Resumo.class)
+//	@GetMapping(params = "prejecao=resumo")
+//	public List<RestauranteModel> listarResumido() {
+//		return listar();
+//	}
+//	
 	@GetMapping("/{restauranteId}")
 	public RestauranteModel buscar(@PathVariable Long restauranteId) {
 		
