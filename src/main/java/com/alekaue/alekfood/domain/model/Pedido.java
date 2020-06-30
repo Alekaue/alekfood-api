@@ -1,7 +1,6 @@
 package com.alekaue.alekfood.domain.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +45,9 @@ public class Pedido {
 	@Enumerated(EnumType.STRING)
 	private StatusPedido status = StatusPedido.CRIADO;
 
+	@CreationTimestamp
+	private OffsetDateTime dataCriacao;
+	
 	private OffsetDateTime dataConfirmacao;
 	private OffsetDateTime dataCancelamento;
 	private OffsetDateTime dataEntrega;
@@ -53,9 +55,6 @@ public class Pedido {
 	private BigDecimal subtotal;
 	private BigDecimal taxaFrete;
 	private BigDecimal valorTotal;
-	
-	@CreationTimestamp
-	private LocalDate dataCriacao;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)

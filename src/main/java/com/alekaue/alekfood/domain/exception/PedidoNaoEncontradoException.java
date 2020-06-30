@@ -1,6 +1,4 @@
-package com.alekaue.alekfood.api.controller.exceptionhandler;
-
-import com.alekaue.alekfood.domain.exception.EntidadeNaoEncontradaException;
+package com.alekaue.alekfood.domain.exception;
 
 public class PedidoNaoEncontradoException extends EntidadeNaoEncontradaException{
 

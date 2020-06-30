@@ -3,8 +3,8 @@ package com.alekaue.alekfood.domain.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alekaue.alekfood.api.controller.exceptionhandler.PedidoNaoEncontradoException;
 import com.alekaue.alekfood.domain.exception.NegocioException;
+import com.alekaue.alekfood.domain.exception.PedidoNaoEncontradoException;
 import com.alekaue.alekfood.domain.model.Cidade;
 import com.alekaue.alekfood.domain.model.FormaPagamento;
 import com.alekaue.alekfood.domain.model.Pedido;
