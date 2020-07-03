@@ -1,4 +1,4 @@
-package com.alekaue.alekfood.domain.repository.filter;
+package com.alekaue.alekfood.domain.filter;
 
 import java.time.OffsetDateTime;
 
