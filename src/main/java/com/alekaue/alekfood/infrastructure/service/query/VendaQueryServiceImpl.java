@@ -1,4 +1,4 @@
-package com.alekaue.alekfood.infrastructure.service;
+package com.alekaue.alekfood.infrastructure.service.query;
 
 import java.sql.Date;
 import java.util.ArrayList;
